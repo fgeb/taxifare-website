@@ -1,25 +1,34 @@
 import streamlit as st
+import geopy as gp
+from geopy.geocoders import Nominatim
+
 import requests
 import pandas as pd
 import numpy as np
 
 '''
-# TaxiFareModel Predict 🚕 💶
+# Maps
 '''
 
 # url = 'https://taxifare.lewagon.ai/predict'
 # res = requests.get(url)
 # print(res.text)
 
+location_query = st.text_input("Search for address", "")
+geolocator = Nominatim(user_agent="streamlit-mapbox")
+
 df = pd.DataFrame(
-    [[52.50465, 13.28397]],
+    [[52.51978, 13.40443]],
     columns=["lat", "lon"],
 )
-st.map(df)
+map = st.map(df)
 
-# st.map(
-#     latitude=52.50465,
-#     #latitude=13.28397
-# )
+if location_query:
+    location = geolocator.geocode(location_query)
 
-#st.map(data=None, *, latitude=None, longitude=None, color=None, size=None, zoom=None, use_container_width=True, width=None, height=None)
+    if location:
+        df = pd.DataFrame(
+            [[location.latitude, location.longitude]],
+            columns=["lat", "lon"],
+        )
+        map.map(df)
